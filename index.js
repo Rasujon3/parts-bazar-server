@@ -87,12 +87,22 @@ async function run() {
     });
 
     // parts start
+
     app.get("/parts", async (req, res) => {
       const query = {};
       const cursor = partsCollection.find(query);
       const parts = await cursor.toArray();
       res.send(parts);
     });
+
+    app.get("/part/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const part = await partsCollection.findOne(query);
+      // const part = await cursor.toArray();
+      res.send(part);
+    });
+
     // parts end
 
     // Purchase
