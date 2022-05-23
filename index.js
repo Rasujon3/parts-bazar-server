@@ -56,6 +56,9 @@ async function run() {
     // Assignment 12
     const partsCollection = client.db(`doctors_portal`).collection(`parts`);
     const reviewsCollection = client.db(`doctors_portal`).collection(`reviews`);
+    const purchasesCollection = client
+      .db(`doctors_portal`)
+      .collection(`purchase`);
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -115,14 +118,21 @@ async function run() {
     });
     // reviews end
 
-    // Purchase
+    // Purchase start
     app.get("/purchase", async (req, res) => {
       const query = {};
-      const cursor = collectionName.find(query);
+      const cursor = purchasesCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
     });
 
+    app.post("/purchase", async (req, res) => {
+      const purchase = req.body;
+      const result = await purchasesCollection.insertOne(purchase);
+      res.send(result);
+    });
+
+    // Purchase end
     app.get("/service", async (req, res) => {
       const query = {};
       const cursor = serviceCollection.find(query).project({ name: 1 });
