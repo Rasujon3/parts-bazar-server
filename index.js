@@ -55,6 +55,7 @@ async function run() {
 
     // Assignment 12
     const partsCollection = client.db(`doctors_portal`).collection(`parts`);
+    const reviewsCollection = client.db(`doctors_portal`).collection(`reviews`);
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -104,6 +105,15 @@ async function run() {
     });
 
     // parts end
+
+    // reviews start
+    app.get("/reviews", async (req, res) => {
+      const query = {};
+      const cursor = reviewsCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+    // reviews end
 
     // Purchase
     app.get("/purchase", async (req, res) => {
