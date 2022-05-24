@@ -97,7 +97,7 @@ async function run() {
 
     app.get("/parts", async (req, res) => {
       const query = {};
-      const cursor = partsCollection.find(query);
+      const cursor = partsCollection.find(query).sort({ _id: -1 });
       const parts = await cursor.toArray();
       res.send(parts);
     });
@@ -121,7 +121,7 @@ async function run() {
     // reviews start
     app.get("/reviews", async (req, res) => {
       const query = {};
-      const cursor = reviewsCollection.find(query);
+      const cursor = reviewsCollection.find(query).sort({ _id: -1 });
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
