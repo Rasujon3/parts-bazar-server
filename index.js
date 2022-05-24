@@ -102,7 +102,7 @@ async function run() {
       res.send(parts);
     });
 
-    app.get("/part/:id", verifyJWT, async (req, res) => {
+    app.get("/part/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const part = await partsCollection.findOne(query);
