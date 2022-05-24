@@ -134,6 +134,7 @@ async function run() {
     // reviews end
 
     // Purchase start
+
     // app.get("/purchase", async (req, res) => {
     //   const query = {};
     //   const cursor = purchasesCollection.find(query);
@@ -144,6 +145,13 @@ async function run() {
     app.post("/purchase", async (req, res) => {
       const purchase = req.body;
       const result = await purchasesCollection.insertOne(purchase);
+      res.send(result);
+    });
+
+    app.delete("/purchase/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await purchasesCollection.deleteOne(filter);
       res.send(result);
     });
 
