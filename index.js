@@ -107,6 +107,12 @@ async function run() {
       res.send(part);
     });
 
+    app.post("/part", verifyJWT, verifyAdmin, async (req, res) => {
+      const part = req.body;
+      const result = await partsCollection.insertOne(part);
+      res.send(result);
+    });
+
     // parts end
 
     // reviews start
