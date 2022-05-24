@@ -102,7 +102,7 @@ async function run() {
       res.send(parts);
     });
 
-    app.get("/part/:id", async (req, res) => {
+    app.get("/part/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const part = await partsCollection.findOne(query);
@@ -113,6 +113,13 @@ async function run() {
     app.post("/part", verifyJWT, verifyAdmin, async (req, res) => {
       const part = req.body;
       const result = await partsCollection.insertOne(part);
+      res.send(result);
+    });
+
+    app.delete("/part/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await partsCollection.deleteOne(filter);
       res.send(result);
     });
 
