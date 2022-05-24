@@ -59,6 +59,9 @@ async function run() {
     const purchasesCollection = client
       .db(`doctors_portal`)
       .collection(`purchase`);
+    const myProfileCollection = client
+      .db(`doctors_portal`)
+      .collection(`myProfile`);
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -145,6 +148,43 @@ async function run() {
     });
 
     // Purchase end
+
+    // My Profile start
+
+    app.get("/myProfile/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = myProfileCollection.find(query);
+      const myProfile = await cursor.toArray();
+      res.send(myProfile);
+    });
+
+    app.post("/myProfile/:email", async (req, res) => {
+      const myProfile = req.body;
+      const result = await myProfileCollection.insertOne(myProfile);
+      res.send(result);
+    });
+
+    app.put("/myProfile/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const updatedUser = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          updatedUser,
+        },
+      };
+      const result = await myProfileCollection.updateOne(
+        filter,
+        updatedDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    // My Profile end
+
     app.get("/service", async (req, res) => {
       const query = {};
       const cursor = serviceCollection.find(query).project({ name: 1 });
