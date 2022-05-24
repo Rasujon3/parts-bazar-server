@@ -78,7 +78,7 @@ async function run() {
     // payment
     app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const service = req.body;
-      const price = service.price;
+      const price = service.payablePrice;
       const amount = price * 100;
 
       // Create a PaymentIntent with the order amount and currency
@@ -134,12 +134,12 @@ async function run() {
     // reviews end
 
     // Purchase start
-    app.get("/purchase", async (req, res) => {
-      const query = {};
-      const cursor = purchasesCollection.find(query);
-      const products = await cursor.toArray();
-      res.send(products);
-    });
+    // app.get("/purchase", async (req, res) => {
+    //   const query = {};
+    //   const cursor = purchasesCollection.find(query);
+    //   const products = await cursor.toArray();
+    //   res.send(products);
+    // });
 
     app.post("/purchase", async (req, res) => {
       const purchase = req.body;
@@ -184,6 +184,49 @@ async function run() {
     });
 
     // My Profile end
+
+    // My Order start
+
+    app.get("/purchase", verifyJWT, async (req, res) => {
+      const email = req.query.email;
+      // const authorization = req.headers.authorization;
+      const decodedEmail = req.decoded.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const orders = await purchasesCollection.find(query).toArray();
+        return res.send(orders);
+      } else {
+        return res.status(403).send({ message: "Forbidden access" });
+      }
+    });
+
+    app.get("/purchase/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const order = await purchasesCollection.findOne(query);
+      res.send(order);
+    });
+
+    app.patch("/purchase/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+
+      const result = await paymentCollection.insertOne(payment);
+      const updatedBooking = await purchasesCollection.updateOne(
+        filter,
+        updatedDoc
+      );
+      res.send(updatedDoc);
+    });
+
+    // My Order end
 
     app.get("/service", async (req, res) => {
       const query = {};
