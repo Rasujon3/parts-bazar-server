@@ -80,6 +80,10 @@ async function run() {
       const service = req.body;
       const price = service.payablePrice;
       const amount = price * 100;
+      // console.log(amount);
+      if (amount > 999999) {
+        return res.send({ message: "Amount must be less than $9999" });
+      }
 
       // Create a PaymentIntent with the order amount and currency
       const paymentIntent = await stripe.paymentIntents.create({
@@ -252,7 +256,7 @@ async function run() {
       res.send(allOrders);
     });
 
-    app.put("/allOrders/:id", verifyJWT, async (req, res) => {
+    app.put("/allOrders/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       // const payment = req.body;
       const filter = { _id: ObjectId(id) };
