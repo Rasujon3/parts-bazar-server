@@ -243,6 +243,28 @@ async function run() {
 
     // My Order end
 
+    // All Order Start
+
+    app.get("/allOrders", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const cursor = purchasesCollection.find(query);
+      const allOrders = await cursor.toArray();
+      res.send(allOrders);
+    });
+
+    app.put("/allOrders/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      // const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: { status: "shipped" },
+      };
+      const result = await purchasesCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    // All Order End
+
     app.get("/service", async (req, res) => {
       const query = {};
       const cursor = serviceCollection.find(query).project({ name: 1 });
